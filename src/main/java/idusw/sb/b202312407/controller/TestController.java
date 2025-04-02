@@ -30,7 +30,12 @@ public class TestController {
         // "/" == http://localhost:8080/ == static == templates == Application Context
     }
     @PostMapping("/register") //action="/register"일 때, method="post"면 @PostMapping
-    public String register() {
+    public String register(@RequestParam("first-name") String fname,
+                           @RequestParam("last-name") String lname,
+                           @RequestParam String email, Model model) {
+        model.addAttribute("email", email);
+        model.addAttribute("firstName", fname);
+        model.addAttribute("lastName", lname);
         return "messages/m-register";
     }
     @GetMapping("/register-form")
