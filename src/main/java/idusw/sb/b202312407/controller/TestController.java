@@ -1,5 +1,6 @@
 package idusw.sb.b202312407.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,13 +10,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller // Spring 프로젝트를 개발할 때 컨트롤러를 지정함
 public class TestController {
     @GetMapping("/login")
-    public String login(@RequestParam String email, @RequestParam String password, Model model) {
+    public String login(@RequestParam String email, @RequestParam String password, Model model, HttpSession session) {
         String pw = "cometrue";
         if(pw.equals(password)) {
             System.out.println(email);
             System.out.println(password);
             model.addAttribute("email", email);
             model.addAttribute("name", email.substring(0,email.indexOf('@'))+"님");
+            session.setAttribute("name", email.substring(email.indexOf('@')+1));
         }
         else {
             System.out.println("Wrong password");
