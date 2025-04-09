@@ -246,9 +246,9 @@
 
                     <!-- 404 Error Text -->
                     <div class="text-center">
-                        <div class="error mx-auto" data-text="Register">Register</div>
+                        <div class="error mx-auto" data-text=""> <span th:text="${firstName}"></span></div>
                         <p class="lead text-gray-800 mb-5">
-                            <span th:text="${email}"></span>, <span th:text="${firstName}"></span>
+                          등록을 환영해요!
                         </p>
                         <p class="text-gray-500 mb-0">It looks like you found a glitch in the matrix...</p>
                         <a href="../main/index.html">&larr; Back to Dashboard</a>

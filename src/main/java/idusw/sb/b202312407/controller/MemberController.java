@@ -1,5 +1,6 @@
 package idusw.sb.b202312407.controller;
 
+import idusw.sb.b202312407.domain.Member;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -7,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@Controller // Spring 프로젝트를 개발할 때 컨트롤러를 지정함
-public class TestController {
+@Controller
+public class MemberController {
     @GetMapping("/login")
     public String login(@RequestParam String email, @RequestParam String password, Model model, HttpSession session) {
         String pw = "cometrue";
@@ -32,33 +33,18 @@ public class TestController {
         // "/" == http://localhost:8080/ == static == templates == Application Context
     }
     @PostMapping("/register") //action="/register"일 때, method="post"면 @PostMapping
-    public String register(@RequestParam("first-name") String fname,
-                           @RequestParam("last-name") String lname,
-                           @RequestParam String email, Model model) {
-        model.addAttribute("email", email);
-        model.addAttribute("firstName", fname);
-        model.addAttribute("lastName", lname);
+    public String register(Member memberDto,
+                           Model model) {
+        System.out.println(memberDto.getFirstName());
+        model.addAttribute("firstName", memberDto.getFirstName());
         return "messages/m-register";
     }
     @GetMapping("/register-form")
-    public String registerForm() {
+    public String registerForm(Model model) {
+        //model.addAttribute("memberDto", new Member());
+         model.addAttribute("memberDto",
+                 Member.builder()
+                 .email("root@induk.ac.kr").firstName("root").build());
         return "members/register";
     }
-    @GetMapping("/forgot-password-form")
-    public String forgotForm() {
-        return "members/forgot-password";
-    }
-
-
-    @GetMapping("/404")
-    public String go404() {
-        return "main/404"; // view resolving
-    }
-    @GetMapping("/")
-    // URL - http://localhost:8080/
-    // http://localhost:8080, http://localhost:8080/default-page (index.html, index.jsp ... )
-    public String index() {
-        return "main/index";
-    }
-
 }
