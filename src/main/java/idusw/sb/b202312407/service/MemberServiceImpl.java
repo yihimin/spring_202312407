@@ -2,10 +2,11 @@ package idusw.sb.b202312407.service;
 
 import idusw.sb.b202312407.domain.Member;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class MemberServiceImpl implements MemberService {
     private JdbcTemplate jdbcTemplate;
     public MemberServiceImpl(JdbcTemplate jdbcTemplate) {

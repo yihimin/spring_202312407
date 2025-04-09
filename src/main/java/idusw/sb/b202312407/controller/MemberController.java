@@ -1,6 +1,7 @@
 package idusw.sb.b202312407.controller;
 
 import idusw.sb.b202312407.domain.Member;
+import idusw.sb.b202312407.service.MemberService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,10 +9,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 @Controller
 public class MemberController {
+    private MemberService memberService;
+    public MemberController(MemberService memberService) {
+        this.memberService = memberService;
+    }
     @GetMapping("/login")
     public String login(@RequestParam String email, @RequestParam String password, Model model, HttpSession session) {
+        List<Member> members = memberService.getMembers();
+        for (Member member : members) {
+            System.out.println(member.getEmail() + " " + member.getFirstName() + " " + member.getLastName());
+        }
+        /*
         String pw = "cometrue";
         if(pw.equals(password)) {
             System.out.println(email);
@@ -23,7 +35,7 @@ public class MemberController {
         else {
             System.out.println("Wrong password");
         }
-
+*/
         return "messages/m-login";
     }
     @GetMapping("/login-form") // URL , a href="<reference>", http://localhost:8080/login-form
