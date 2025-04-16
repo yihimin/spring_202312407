@@ -2,6 +2,7 @@ package idusw.sb.b202312407.controller;
 
 import idusw.sb.b202312407.domain.Member;
 import idusw.sb.b202312407.service.MemberService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,17 +30,32 @@ public class MemberController {
         return "members/login";
     }
     @GetMapping("/login")      // @PostMapping 정보 저장 - body를 통해 정보를 전달함
-    public String login(@RequestParam String email, @RequestParam String password, Model model, HttpSession session) {
-        // @Service와 @Repository에게 요청을 전달하여, 처리된 결과를 반환 받음
-        System.out.println(email);
-        System.out.println(password);
-        model.addAttribute("email", email);
-        model.addAttribute("password", password);
-        session.setAttribute("sess", email);
-        session.setMaxInactiveInterval(300);
-        session.invalidate();
-        return "messages/m-login";
+    public String login(@RequestParam String email,
+                        @RequestParam String password,
+                        Model model,
+                        HttpSession session,
+                        HttpServletRequest request) {
+
+        Member member = memberService.readByEmailPassword(email, password);
+
+        if (member != null) {
+            // 로그인 성공
+            String name = email.substring(0, email.indexOf('@')) + "님";
+            System.out.println("로그인 성공: " + email);
+
+            model.addAttribute("name", name);
+            session.setAttribute("name", name);
+            session.setMaxInactiveInterval(60 * 30); // 30분 유지
+
+            return "main/index"; // 로그인 성공 시 이동할 페이지
+        } else {
+            // 로그인 실패
+            System.out.println("로그인 실패: 이메일 또는 비밀번호 불일치");
+            model.addAttribute("error", "이메일 또는 비밀번호가 일치하지 않습니다.");
+        }
+        return "messages/m-login"; // 다시 로그인 폼으로
     }
+
     @GetMapping("/register-form")  // @GetMapping 정보 조회, 템플릿 페이지를 접근
     public String registerForm(Model model) {
         //model.addAttribute("memberDto", new Member());
