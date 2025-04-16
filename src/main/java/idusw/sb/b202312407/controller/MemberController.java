@@ -17,46 +17,52 @@ public class MemberController {
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
     }
-    @GetMapping("/login")
+    @GetMapping("/test")
+    public String test(Model model) {
+        List<Member> members = memberService.readAll(); // 전체 조회
+        model.addAttribute("members", members);
+        return "main/tables"; // templates/main/tables.html
+    }
+
+    @GetMapping("/login-form")  // @GetMapping 정보 조회, 템플릿 페이지를 접근
+    public String loginForm() {
+        return "members/login";
+    }
+    @GetMapping("/login")      // @PostMapping 정보 저장 - body를 통해 정보를 전달함
     public String login(@RequestParam String email, @RequestParam String password, Model model, HttpSession session) {
-        List<Member> members = memberService.getMembers();
-        for (Member member : members) {
-            System.out.println(member.getEmail() + " " + member.getFirstName() + " " + member.getLastName());
-        }
-        /*
-        String pw = "cometrue";
-        if(pw.equals(password)) {
-            System.out.println(email);
-            System.out.println(password);
-            model.addAttribute("email", email);
-            model.addAttribute("name", email.substring(0,email.indexOf('@'))+"님");
-            session.setAttribute("name", email.substring(email.indexOf('@')+1));
-        }
-        else {
-            System.out.println("Wrong password");
-        }
-*/
+        // @Service와 @Repository에게 요청을 전달하여, 처리된 결과를 반환 받음
+        System.out.println(email);
+        System.out.println(password);
+        model.addAttribute("email", email);
+        model.addAttribute("password", password);
+        session.setAttribute("sess", email);
+        session.setMaxInactiveInterval(300);
+        session.invalidate();
         return "messages/m-login";
     }
-    @GetMapping("/login-form") // URL , a href="<reference>", http://localhost:8080/login-form
-    // @RequestMapping(value="/login-form", method = {RequestMethod.GET} )
-    public String loginForm() {
-        return "members/login";    // view에게 전달하여 응답을 처리함, main/login -> main/login.html
-        // "/" == http://localhost:8080/ == static == templates == Application Context
-    }
-    @PostMapping("/register") //action="/register"일 때, method="post"면 @PostMapping
-    public String register(Member memberDto,
-                           Model model) {
-        System.out.println(memberDto.getFirstName());
-        model.addAttribute("firstName", memberDto.getFirstName());
-        return "messages/m-register";
-    }
-    @GetMapping("/register-form")
+    @GetMapping("/register-form")  // @GetMapping 정보 조회, 템플릿 페이지를 접근
     public String registerForm(Model model) {
         //model.addAttribute("memberDto", new Member());
-         model.addAttribute("memberDto",
-                 Member.builder()
-                 .email("root@induk.ac.kr").firstName("root").build());
-        return "members/register";
+        model.addAttribute("memberDto",
+                Member.builder().email("root@induk.ac.kr").build()); // email 필드는 지정된 값으로 빌드
+
+        return "members/register"; // register.html 접근, 기본 suffix는 .html임. suffix 수정 가능
+    }
+    @PostMapping("/register")      // @PostMapping 정보 저장 - body를 통해 정보를 전달함
+    public String register(Member memberDto, Model model) { // @RequestBody
+        // @Service와 @Repository에게 요청을 전달하여, 처리된 결과를 반환 받음
+        System.out.println(memberDto.getFirstName());
+        System.out.println(memberDto.getEmail());
+        model.addAttribute("firstName", memberDto.getFirstName());
+        return "messages/m-register";   //기본 suffix는 .html임.
+    }
+    @GetMapping("/forgot-password-form")  // @GetMapping 정보 조회, 템플릿 페이지를 접근
+    public String forgotPasswordForm() {
+        return "members/forgot-password";
+    }
+    @GetMapping("/forgot-password")      // @PostMapping 정보 저장 - body를 통해 정보를 전달함
+    public String forgotPassword() { //@RequestParam String email, @RequestParam String password) {
+        // @Service와 @Repository에게 요청을 전달하여, 처리된 결과를 반환 받음
+        return "main/m-forgot-password";
     }
 }
