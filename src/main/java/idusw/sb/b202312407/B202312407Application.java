@@ -1,6 +1,5 @@
 package idusw.sb.b202312407;
 
-import idusw.sb.b202312407.domain.TestLombok;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
