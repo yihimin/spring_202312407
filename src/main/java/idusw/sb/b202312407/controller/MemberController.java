@@ -14,71 +14,86 @@ import java.util.List;
 
 @Controller
 public class MemberController {
+    /**
+     * DI(Dependency Injection) : 의존성 주입, 의존관계에 있는 객체를 필요시점에 사용할 수 있도록 프레이워크가 제어함
+     * MemberController 객체는 MemeberService 객체를 사용하여 처리한다.
+     * 따라서 MemberController 객체가 생성되기 전 MemberService 객체가 생성되어 있어야 함.
+     * 이를 Spring Framework (DI Container)가 처리함
+     * 1. Constructor Injection( 생성자 주입), 2. Setter Injection(세터 주입), 3. Field Injectioin(필드 주입)
+     */
+    //@Autowired
     private MemberService memberService;
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService) { // Constructor Injection
         this.memberService = memberService;
     }
     @GetMapping("/test")
     public String test(Model model) {
-        List<Member> members = memberService.readAll(); // 전체 조회
-        model.addAttribute("members", members);
-        return "main/tables"; // templates/main/tables.html
-    }
-
-    @GetMapping("/login-form")  // @GetMapping 정보 조회, 템플릿 페이지를 접근
-    public String loginForm() {
-        return "members/login";
-    }
-    @GetMapping("/login")      // @PostMapping 정보 저장 - body를 통해 정보를 전달함
-    public String login(@RequestParam String email,
-                        @RequestParam String password,
-                        Model model,
-                        HttpSession session,
-                        HttpServletRequest request) {
-
-        Member member = memberService.readByEmailPassword(email, password);
-
-        if (member != null) {
-            // 로그인 성공
-            String name = email.substring(0, email.indexOf('@')) + "님";
-            System.out.println("로그인 성공: " + email);
-
-            model.addAttribute("name", name);
-            session.setAttribute("name", name);
-            session.setMaxInactiveInterval(60 * 30); // 30분 유지
-
-            return "main/index"; // 로그인 성공 시 이동할 페이지
-        } else {
-            // 로그인 실패
-            System.out.println("로그인 실패: 이메일 또는 비밀번호 불일치");
-            model.addAttribute("error", "이메일 또는 비밀번호가 일치하지 않습니다.");
+        /*
+        Member member = memberService.readByEmail("egyou@induk.ac.kr");
+        System.out.println(member.getEmail() + " : "
+                + member.getFirstName() + ": " + member.getLastName());
+        */
+        List<Member> members = memberService.readAll();
+        for (Member member : members) {
+            System.out.println(member.getEmail() + " : "
+                    + member.getFirstName() + ": " + member.getLastName());
         }
-        return "messages/m-login"; // 다시 로그인 폼으로
-    }
+        model.addAttribute("members", members);
 
-    @GetMapping("/register-form")  // @GetMapping 정보 조회, 템플릿 페이지를 접근
-    public String registerForm(Model model) {
-        //model.addAttribute("memberDto", new Member());
-        model.addAttribute("memberDto",
-                Member.builder().email("root@induk.ac.kr").build()); // email 필드는 지정된 값으로 빌드
-
-        return "members/register"; // register.html 접근, 기본 suffix는 .html임. suffix 수정 가능
+        return "main/tables";
     }
-    @PostMapping("/register")      // @PostMapping 정보 저장 - body를 통해 정보를 전달함
-    public String register(Member memberDto, Model model) { // @RequestBody
-        // @Service와 @Repository에게 요청을 전달하여, 처리된 결과를 반환 받음
+    @GetMapping("/login")
+    //@RequestMapping(value="/login", method={RequestMethod.GET})
+    public String login(@RequestParam String email, @RequestParam String password,
+                        Model model, HttpSession session, HttpServletRequest request) {
+        Member member = memberService.readByEmailPassword(email, password);
+        // HttpSession sess = request.getSession();
+        if(member != null) {
+            /*
+            model.addAttribute("name", member.getEmail().substring(0,email.indexOf('@')) + "님 환영합니다."); // ${name}
+            egyou@induk.ac.kr : @의 index를 indexOf -> 5, substring(0, 5) : 0, ~ 4의 부분 문자열을 반환
+            session.setMaxInactiveInterval(30*60); // 30분간 유효
+             */
+            session.setAttribute("name", member.getEmail().substring(0,email.indexOf('@')) + "님 환영합니다."); // ${session.name}
+        }
+        else {
+            session.setAttribute("name", "Check Your Email or Password!");
+        }
+        return "messages/m-login"; // template에게 email, password : model
+    }
+    @GetMapping("/login-form") // URL , a href="<reference>", http://localhost:8080/login-form
+    // @RequestMapping(value="/login-form", method = {RequestMethod.GET} )
+    public String loginForm() {
+        return "members/login";    // view에게 전달하여 응답을 처리함, main/login -> main/login.html
+        // "/" == http://localhost:8080/ == static == templates == Application Context
+    }
+    @PostMapping("/register") // action="./register" or "/register" , method="post"경우 @PostMapping
+    public String register(Member memberDto,
+                           Model model) {
+        // @Service, @Repository 를 활용한 업무 및 데이터 처리 요청 및 결과
         System.out.println(memberDto.getFirstName());
-        System.out.println(memberDto.getEmail());
         model.addAttribute("firstName", memberDto.getFirstName());
-        return "messages/m-register";   //기본 suffix는 .html임.
+        return "messages/m-register"; // firstName 속성 값을 전달해주어 m-register.html에서 사용
     }
-    @GetMapping("/forgot-password-form")  // @GetMapping 정보 조회, 템플릿 페이지를 접근
-    public String forgotPasswordForm() {
+    @GetMapping("/register-form") // URL , a href="<reference>", http://localhost:8080/login-form
+    // @RequestMapping(value="/login-form", method = {RequestMethod.GET} )
+    public String registerForm(Model model) { // 등록폼에 model객체를 활용하여 속성(객체, 문자열 등)을 전달
+        // model.addAttribute("memberDto", new Member());
+        model.addAttribute("memberDto",
+                Member.builder()
+                        .email("root@induk.ac.kr")
+                        .firstName("root").build());
+        return "members/register";  // suffix는 .html로 기본 설정되어 있음.
+        // application.properties 활용하여 변경 가능함
+
+    }
+    @GetMapping("/forgot-password-form")
+    public String forgotPasswordForm(Model model) {
         return "members/forgot-password";
     }
-    @GetMapping("/forgot-password")      // @PostMapping 정보 저장 - body를 통해 정보를 전달함
-    public String forgotPassword() { //@RequestParam String email, @RequestParam String password) {
-        // @Service와 @Repository에게 요청을 전달하여, 처리된 결과를 반환 받음
-        return "main/m-forgot-password";
+    @PostMapping("/forgot-password")
+    public String forgotPassword() {
+
+        return "messages/m-forgot-password";
     }
 }

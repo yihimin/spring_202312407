@@ -1,11 +1,9 @@
 package idusw.sb.b202312407.service;
 
 import idusw.sb.b202312407.domain.Member;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 public interface MemberService {
     // C.R.U.D - Boiler Plate Code (반복적인 코드, 상용적으로 활용되는 코드)
     int create(Member member);
@@ -15,3 +13,4 @@ public interface MemberService {
     int update(Member member);
     int delete(Member member);
 }
+

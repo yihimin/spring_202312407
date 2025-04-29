@@ -25,9 +25,9 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-    implementation 'org.springframework:spring-jdbc:6.2.5'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:3.4.4'
     implementation 'com.mysql:mysql-connector-j:8.4.0'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
@@ -37,6 +37,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
+
 
 tasks.named('test') {
     useJUnitPlatform()

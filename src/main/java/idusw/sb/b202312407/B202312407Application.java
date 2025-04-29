@@ -11,8 +11,10 @@ public class B202312407Application {
         SpringApplication.run(B202312407Application.class, args);
 
         // 객체의 메소드를 사용하려면, 먼저 클래스로 객체를 생성해야 한다.
+        /*
         TestLombok nc = new TestLombok();
         nc.print();
+        */
     }
 
 }
